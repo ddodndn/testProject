@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via SSH (pem fix + incremental)
+name: Deploy to Cafe24 via FTP
 
 on:
   push:
@@ -9,25 +9,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH agent with PEM key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa.pem
-          chmod 600 ~/.ssh/id_rsa.pem
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa.pem
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Test SSH connection
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo 'SSH connection OK ✅'"
-
-      - name: Deploy changed files via rsync
-        run: |
-          rsync -avzr --delete \
-            --exclude-from='.rsyncignore' \
-            -e "ssh -o StrictHostKeyChecking=no" \
-            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/idssujin1/www/
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          server-dir: /www/
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/*
+            **/vendor/*
+            **/cache/*
