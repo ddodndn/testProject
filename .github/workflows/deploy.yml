@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via FTP (non-SSL)
+name: Deploy to Cafe24 via FTP (ignore missing folders)
 
 on:
   push:
@@ -22,14 +22,25 @@ jobs:
           port: 21
           server-dir: /www/
           local-dir: ./
+          # 없는 폴더나 내부 편집기 관련 폴더 전부 무시
           exclude: |
             **/.git*
             **/.git/**
             **/.github/**
+            **/.vscode/**
+            **/.vscode*
             **/node_modules/**
             **/vendor/**
             **/cache/**
             **/data/**
             **/session/**
+            **/tmp/**
+            **/backup/**
             **/*.log
+            **/*.tmp
+            **/*.bak
             config.php
+          # 오류 대신 경고로 처리하도록 설정
+          danger-ignore-ftp-warnings: true
+          # 업로드 전 파일 리스트 계산을 먼저 수행 (속도 향상)
+          state-name: ".ftp-deploy-sync-state.json"
