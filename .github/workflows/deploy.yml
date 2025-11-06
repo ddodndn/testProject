@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via FTP
+name: Deploy to Cafe24 via FTP (non-SSL)
 
 on:
   push:
@@ -15,24 +15,21 @@ jobs:
       - name: FTP Deploy to Cafe24
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
+          protocol: ftp
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          protocol: ftps
-          local-dir: ./
+          port: 21
           server-dir: /www/
+          local-dir: ./
           exclude: |
             **/.git*
             **/.git/**
             **/.github/**
-            **/.github*
             **/node_modules/**
             **/vendor/**
             **/cache/**
             **/data/**
             **/session/**
-            **/eyoom/cache/**
-            **/theme/eyoom_basic/cache/**
-            **/theme/eyoom_basic/data/**
             **/*.log
             config.php
