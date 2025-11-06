@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via FTP (Safe Incremental)
+name: Deploy to Cafe24 via FTP (no delete mode)
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: FTP Deploy (safe mode)
+      - name: FTP Deploy (no delete mode)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           protocol: ftp
@@ -38,13 +38,9 @@ jobs:
             **/*.tmp
             **/*.bak
             config.php
-          # 파일 삭제는 허용, 폴더 삭제는 금지
-          delete: true
-          delete-untracked: true
+          delete: false
           dangerous-clean-slate: false
-          # 없는 폴더 오류 무시
           danger-ignore-ftp-warnings: true
-          # 변경된 파일만 동기화
           sync: auto
           state-name: ".ftp-deploy-sync-state.json"
           log-level: verbose
