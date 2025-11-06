@@ -1,8 +1,8 @@
-name: Deploy to Cafe24 via SSH
+name: Deploy to Cafe24 via SCP
 
 on:
   push:
-    branches: [ "master" ]  # master 브랜치 push 시 자동배포
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -15,12 +15,16 @@ jobs:
       - name: PHP Syntax Check
         run: find . -type f -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
 
-      - name: Deploy via rsync
-        uses: burnett01/rsync-deployments@5.1
-        with:
-          switches: -avzr --delete --exclude-from='.rsyncignore'
-          path: ./
-          remote_path: /home/idssujin1/www/
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_key: ${{ secrets.SSH_KEY }}
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via SCP
+        run: |
+          echo "Uploading files to Cafe24..."
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r \
+            $(ls -A | grep -vE '^\.git$|^\.github$|^data$|^cache$|^session$|^vendor$|^node_modules$') \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/idssujin1/www/
