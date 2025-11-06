@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: FTP Deploy
+      - name: FTP Deploy to Cafe24
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -23,6 +23,13 @@ jobs:
           exclude: |
             **/.git*
             **/.github*
-            **/node_modules/*
-            **/vendor/*
-            **/cache/*
+            **/.git/**
+            **/node_modules/**
+            **/vendor/**
+            **/cache/**
+            **/data/**
+            **/session/**
+            **/eb4_cache/**
+            **/eyoom/cache/**
+            **/theme/eb4_basic/cache/**
+            **/theme/eb4_basic/data/**
