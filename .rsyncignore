@@ -1,0 +1,11 @@
+.git/
+.github/
+data/
+cache/
+session/
+*.log
+config.php
+theme/eyoom_basic/data/
+theme/eyoom_basic/cache/
+vendor/
+node_modules/
