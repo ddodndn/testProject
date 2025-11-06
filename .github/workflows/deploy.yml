@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via SSH (Incremental)
+name: Deploy to Cafe24 via SSH (pem fix + incremental)
 
 on:
   push:
@@ -12,20 +12,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH key (pem)
+      - name: Setup SSH agent with PEM key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa.pem
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa.pem
           chmod 600 ~/.ssh/id_rsa.pem
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa.pem
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Test SSH connection
         run: |
-          ssh -i ~/.ssh/id_rsa.pem -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo 'SSH connection OK ✅'"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo 'SSH connection OK ✅'"
 
       - name: Deploy changed files via rsync
         run: |
           rsync -avzr --delete \
             --exclude-from='.rsyncignore' \
-            -e "ssh -i ~/.ssh/id_rsa.pem -o StrictHostKeyChecking=no" \
+            -e "ssh -o StrictHostKeyChecking=no" \
             ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/idssujin1/www/
