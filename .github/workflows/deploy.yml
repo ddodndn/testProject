@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: FTP Deploy to Cafe24
@@ -18,18 +18,21 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          server-dir: /www/
+          protocol: ftps
           local-dir: ./
+          server-dir: /www/
           exclude: |
             **/.git*
-            **/.github*
             **/.git/**
+            **/.github/**
+            **/.github*
             **/node_modules/**
             **/vendor/**
             **/cache/**
             **/data/**
             **/session/**
-            **/eb4_cache/**
             **/eyoom/cache/**
-            **/theme/eb4_basic/cache/**
-            **/theme/eb4_basic/data/**
+            **/theme/eyoom_basic/cache/**
+            **/theme/eyoom_basic/data/**
+            **/*.log
+            config.php
