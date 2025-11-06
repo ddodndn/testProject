@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via FTP (ignore missing folders)
+name: Deploy to Cafe24 via FTP (Full → Incremental)
 
 on:
   push:
@@ -12,7 +12,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # FTP Deploy - Full on first run, incremental afterwards
       - name: FTP Deploy to Cafe24
+        id: ftp-deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           protocol: ftp
@@ -22,13 +24,13 @@ jobs:
           port: 21
           server-dir: /www/
           local-dir: ./
-          # 없는 폴더나 내부 편집기 관련 폴더 전부 무시
           exclude: |
             **/.git*
             **/.git/**
             **/.github/**
             **/.vscode/**
             **/.vscode*
+            **/adm/**
             **/node_modules/**
             **/vendor/**
             **/cache/**
@@ -40,7 +42,9 @@ jobs:
             **/*.tmp
             **/*.bak
             config.php
-          # 오류 대신 경고로 처리하도록 설정
           danger-ignore-ftp-warnings: true
-          # 업로드 전 파일 리스트 계산을 먼저 수행 (속도 향상)
           state-name: ".ftp-deploy-sync-state.json"
+          # sync mode: first run full, subsequent runs incremental
+          sync: auto
+          # increase log clarity
+          log-level: verbose
