@@ -40,7 +40,7 @@ jobs:
             **/adm/**
             config.php
           delete: false
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
           danger-ignore-ftp-warnings: true
           sync: auto
           state-name: ".ftp-deploy-sync-state.json"
