@@ -42,7 +42,7 @@ jobs:
           delete: false
           dangerous-clean-slate: true
           danger-ignore-ftp-warnings: true
-          sync: auto
+          sync: nocheck
           state-name: ".ftp-deploy-sync-state.json"
           log-level: verbose
           overwrite: true
