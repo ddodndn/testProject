@@ -37,6 +37,7 @@ jobs:
             **/*.log
             **/*.tmp
             **/*.bak
+            **/adm/**
             config.php
           delete: false
           dangerous-clean-slate: false

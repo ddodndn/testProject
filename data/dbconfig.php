@@ -1,8 +1,6 @@
 <?php
 if (!defined('_GNUBOARD_')) exit;
 
-var_dump($_SERVER['HTTP_HOST']);
-
 if($_SERVER['HTTP_HOST'] == 'localhost:4433') {
     define('G5_MYSQL_HOST', 'localhost');
     define('G5_MYSQL_USER', 'root');
