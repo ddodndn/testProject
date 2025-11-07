@@ -1,7 +1,7 @@
 <?php
 if (!defined('_GNUBOARD_')) exit;
 
-if($_SERVER['HTTP_HOST'] == 'localhost') {
+if($_SERVER['HTTP_REFERER'] == 'localhost') {
     define('G5_MYSQL_HOST', 'localhost');
     define('G5_MYSQL_USER', 'root');
     define('G5_MYSQL_PASSWORD', 'root1234');

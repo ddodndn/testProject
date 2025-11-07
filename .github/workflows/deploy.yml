@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via FTP
+name: Deploy to Cafe24 via FTP (no delete mode)
 
 on:
   push:
@@ -9,20 +9,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: FTP Deploy
+      - name: FTP Deploy (no delete mode)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
+          protocol: ftp
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
+          port: 21
           server-dir: /www/
           local-dir: ./
           exclude: |
             **/.git*
-            **/.github*
-            **/node_modules/*
-            **/vendor/*
-            **/cache/*
+            **/.git/**
+            **/.github/**
+            **/.vscode/**
+            **/node_modules/**
+            **/vendor/**
+            **/cache/**
+            **/data/**
+            **/session/**
+            **/tmp/**
+            **/backup/**
+            **/*.log
+            **/*.tmp
+            **/*.bak
+            config.php
+          delete: false
+          dangerous-clean-slate: false
+          danger-ignore-ftp-warnings: true
+          sync: auto
+          state-name: ".ftp-deploy-sync-state.json"
+          log-level: verbose
