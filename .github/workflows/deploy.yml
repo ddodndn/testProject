@@ -1,4 +1,4 @@
-name: Deploy to Cafe24 via FTP (no delete mode)
+name: Deploy via SSH to Cafe24
 
 on:
   push:
@@ -12,37 +12,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: FTP Deploy (no delete mode)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+      - name: Deploy files to Cafe24 via SSH
+        uses: appleboy/scp-action@v0.1.7
         with:
-          protocol: ftp
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          port: 21
-          server-dir: /
-          local-dir: ./
-          exclude: |
-            **/.git*
-            **/.git/**
-            **/.github/**
-            **/.vscode/**
-            **/node_modules/**
-            **/vendor/**
-            **/cache/**
-            **/data/**
-            **/session/**
-            **/tmp/**
-            **/backup/**
-            **/*.log
-            **/*.tmp
-            **/*.bak
-            **/adm/**
-            config.php
-          delete: false
-          dangerous-clean-slate: true
-          danger-ignore-ftp-warnings: true
-          sync: nocheck
-          state-name: ".ftp-deploy-sync-state.json"
-          log-level: verbose
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./"
+          target: "/www/"
           overwrite: true
+          rm: false
+          recursive: true
+          strip_components: 0
+          timeout: 60s
+          tar_tmp_path: /tmp
+
+      - name: Run post-deploy command (optional)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /www
+            chmod -R 755 .
+            echo "✅ Deployment completed successfully!"
